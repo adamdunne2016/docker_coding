@@ -20,7 +20,7 @@ docker build -t taxi_ingest:v001 .
 
 
 docker run -it --rm \
-  --network=pg-network \
+  --network=pipeline_default \
   taxi_ingest:v001 \
   --pg-user=root \
   --pg-pass=root \
@@ -32,3 +32,17 @@ docker run -it --rm \
   --pg-db=ny_taxi \
   --chunksize=100000
 
+
+
+# In another terminal, run pgAdmin on the same network
+docker run -it \
+  -e PGADMIN_DEFAULT_EMAIL="admin@admin.com" \
+  -e PGADMIN_DEFAULT_PASSWORD="root" \
+  -e PGADMIN_CONFIG_SERVER_MODE=False \
+  -e PGADMIN_CONFIG_PROXY_X_HOST_COUNT=1 \
+  -e PGADMIN_CONFIG_PROXY_X_PREFIX_COUNT=1 \
+  -v pgadmin_data:/var/lib/pgadmin \
+  -p 8085:80 \
+  --network=pg-network \
+  --name pgadmin \
+  dpage/pgadmin4
