@@ -29,18 +29,18 @@ variables:
   data: "{{outputs.extract.outputFiles[inputs.taxi ~ '_tripdata_' ~ inputs.year ~ '-' ~ inputs.month ~ '.csv']}}"
 
 tasks:
-  - id: set_label
+  - id: set_label  # when we execute a task it adds a label to the task
     type: io.kestra.plugin.core.execution.Labels
     labels:
       file: "{{render(vars.file)}}"
       taxi: "{{inputs.taxi}}"
 
   - id: extract
-    type: io.kestra.plugin.scripts.shell.Commands
+    type: io.kestra.plugin.scripts.shell.Commands  # lets us run shell commands on the csv
     outputFiles:
       - "*.csv"
     taskRunner:
-      type: io.kestra.plugin.core.runner.Process
+      type: io.kestra.plugin.core.runner.Process # no need to spin up a whole container
     commands:
       - wget -qO- https://github.com/DataTalksClub/nyc-tlc-data/releases/download/{{inputs.taxi}}/{{render(vars.file)}}.gz | gunzip > {{render(vars.file)}}
 
